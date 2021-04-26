@@ -7,11 +7,11 @@
 #include <mmdeviceapi.h>
 #include <WinRTBase.h>
 #include <thread>
-#include "AudioProvider.h"
 #include "LoopbackAudioSink.h"
 #include <list>
 #include <stack>
 #include <queue>
+#include "DebugAudioSink.h"
 
 #define REFTIMES_PER_SEC  1000000
 #define REFTIMES_PER_MILLISEC  1000000
@@ -28,130 +28,7 @@ const IID IID_IAudioClient = __uuidof(IAudioClient);
 const IID IID_IAudioCaptureClient = __uuidof(IAudioCaptureClient);
 const IID IID_IAudioRenderClient = __uuidof(IAudioRenderClient);
 
-
-class MyAudioSink {
-private:
-	//const size_t bufferSize = 8000000;
-	const size_t bufferSize = 400000;
-
-	void* bufferStart;
-	size_t currentWritePointerOffset = 0;
-	size_t currentReadPointerOffset = 0;
-
-	size_t lastSeenWritePointerOffset = 0;
-
-	unsigned int numChannels = 2;
-	unsigned int bitDepth = 32;
-	BYTE* myData = NULL;
-	UINT32 myFrames = 0;
-	std::queue<BYTE> dataStack;
-	bool buffering = false;
-
-public:
-	MyAudioSink() {
-		bufferStart = malloc(bufferSize);
-	}
-
-	HRESULT SetFormat(WAVEFORMATEX* format) {
-		numChannels = format->nChannels;
-		bitDepth = format->wBitsPerSample;
-		return S_OK;
-	}
-
-	HRESULT CopyData(BYTE* pData, UINT32 numFramesAvailable, BOOL* pDone) {
-		std::cout << "R";
-		//copyBuffered(pData, numFramesAvailable * bitDepth * numChannels / 8, pDone);
-		copyMemory(pData, numFramesAvailable * bitDepth * numChannels / 8, pDone);
-		myData = pData;
-		myFrames = numFramesAvailable;
-		return S_OK;
-	}
-
-	void copyBuffered(BYTE* pData, UINT32 numFramesAvailable, BOOL* pDone) {
-		if (*pData == 0) {
-			return;
-		}
-		for (UINT32 i = 0; i < numFramesAvailable; i++)
-		{
-			dataStack.push((pData)[i]);
-			if (buffering) {
-				i += 2 * bitDepth * numChannels / 8;
-			}
-		}
-	}
-
-	void copyMemory(BYTE* pData, UINT32 numFramesAvailable, BOOL* pDone) {
-		if (currentWritePointerOffset + numFramesAvailable > bufferSize) {
-			currentWritePointerOffset = 0;
-		}
-		auto pValue = (intptr_t)bufferStart;
-		void* actual = (void*)(pValue + currentWritePointerOffset);
-		memcpy(actual, pData, numFramesAvailable);
-		currentWritePointerOffset += numFramesAvailable;
-	}
-
-	HRESULT LoadData(UINT32 numFramesAvailable, BYTE* pData, DWORD* pDone) {
-		std::cout << "P";
-		//loadBuffered(numFramesAvailable * bitDepth * numChannels / 8, pData, pDone);
-		loadMemory(numFramesAvailable * bitDepth * numChannels / 8, pData, pDone);
-		pData = myData;
-		//memcpy(pData, myData, min(numFramesAvailable, myFrames) * bitDepth * numChannels / 8);
-		return S_OK;
-	}
-
-	void loadBuffered(UINT32 numFramesAvailable, BYTE* pData, DWORD* pDone) {
-		auto size = dataStack.size();
-		if (dataStack.empty()) {
-			pData = NULL;
-			//DWORD silent = AUDCLNT_BUFFERFLAGS_SILENT;
-			//pDone = &silent;
-		}
-		else if (numFramesAvailable == 0) { return; }
-		else {
-			for (size_t i = 0; i < min(numFramesAvailable, size); i++)
-			{
-				BYTE element = dataStack.front();
-				//memcpy(pData + i, &element, 1);
-				pData[i] = element;
-				dataStack.pop();
-				if (dataStack.size() > 100000) {
-					buffering = true;
-				}
-				else {
-					buffering = false;
-				}
-			}
-		}
-	}
-
-	void loadMemory(UINT32 numFramesAvailable, BYTE* pData, DWORD* pDone) {
-		if (lastSeenWritePointerOffset == currentWritePointerOffset) {
-			pData = NULL;
-			return;
-		}
-
-		if (currentWritePointerOffset < currentReadPointerOffset) {
-				currentReadPointerOffset = 0;
-		}
-
-		if (currentReadPointerOffset + numFramesAvailable > bufferSize) {
-			currentReadPointerOffset = 0;
-		}
-		BYTE* actual = (BYTE*)((intptr_t)bufferStart + currentReadPointerOffset);
-		memcpy(pData, actual, numFramesAvailable);
-		//pData = actual;
-		int nextReadOffset = currentReadPointerOffset + numFramesAvailable;
-		currentReadPointerOffset = nextReadOffset;
-		//if (newOffset < (intptr_t)bufferStart) {
-		//	lastBufferOffset = 0;
-		//}
-		//else {
-		//	lastBufferOffset = newOffset;
-		//}
-	}
-};
-
-HRESULT PlayAudioStream(MyAudioSink* pMySource)
+HRESULT PlayAudioStream(AudioSink* pAudioSink)
 {
 	HRESULT hr;
 	REFERENCE_TIME hnsRequestedDuration = REFTIMES_PER_SEC;
@@ -195,7 +72,7 @@ HRESULT PlayAudioStream(MyAudioSink* pMySource)
 	EXIT_ON_ERROR(hr)
 
 		// Tell the audio source which format to use.
-		hr = pMySource->SetFormat(pwfx);
+		hr = pAudioSink->SetFormat(pwfx);
 	EXIT_ON_ERROR(hr)
 
 		// Get the actual size of the allocated buffer.
@@ -212,7 +89,7 @@ HRESULT PlayAudioStream(MyAudioSink* pMySource)
 	EXIT_ON_ERROR(hr)
 
 		// Load the initial data into the shared buffer.
-		hr = pMySource->LoadData(bufferFrameCount, pData, &flags);
+		hr = pAudioSink->LoadData(bufferFrameCount, pData, &flags);
 	EXIT_ON_ERROR(hr)
 
 		hr = pRenderClient->ReleaseBuffer(bufferFrameCount, flags);
@@ -243,7 +120,7 @@ HRESULT PlayAudioStream(MyAudioSink* pMySource)
 			EXIT_ON_ERROR(hr)
 
 				// Get next 1/2-second of data from the audio source.
-				hr = pMySource->LoadData(numFramesAvailable, pData, &flags);
+				hr = pAudioSink->LoadData(numFramesAvailable, pData, &flags);
 			EXIT_ON_ERROR(hr)
 
 				hr = pRenderClient->ReleaseBuffer(numFramesAvailable, flags);
@@ -266,7 +143,7 @@ HRESULT PlayAudioStream(MyAudioSink* pMySource)
 		return hr;
 }
 
-HRESULT RecordAudioStream(MyAudioSink* pMySink)
+HRESULT RecordAudioStream(AudioSink* pAudioSink)
 {
 	HRESULT hr;
 	REFERENCE_TIME hnsRequestedDuration = REFTIMES_PER_SEC;
@@ -320,7 +197,7 @@ HRESULT RecordAudioStream(MyAudioSink* pMySink)
 	EXIT_ON_ERROR(hr)
 
 		// Notify the audio sink which format to use.
-		hr = pMySink->SetFormat(pwfx);
+		hr = pAudioSink->SetFormat(pwfx);
 	EXIT_ON_ERROR(hr)
 
 		// Calculate the actual duration of the allocated buffer.
@@ -354,7 +231,7 @@ HRESULT RecordAudioStream(MyAudioSink* pMySink)
 						}
 
 					// Copy the available capture data to the audio sink.
-					hr = pMySink->CopyData(
+					hr = pAudioSink->CopyData(
 						pData, numFramesAvailable, &bDone);
 					EXIT_ON_ERROR(hr)
 
@@ -379,30 +256,24 @@ HRESULT RecordAudioStream(MyAudioSink* pMySink)
 		return hr;
 }
 
-MyAudioSink sink;
-
+AudioSink* pSink = NULL;
 void play() {
-	PlayAudioStream(&sink);
+	PlayAudioStream(pSink);
 }
 
-void rec() {
-	RecordAudioStream(&sink);
+void record() {
+	RecordAudioStream(pSink);
 }
-
-void old() {
-	auto playbackThread = std::thread(&rec);
-	Sleep(700);
-	play();
-}
-
-AudioProvider* provider = NULL;
-LoopbackAudioSink* loopbackSink = NULL;
 
 int main()
 {
 	std::cout << "Hello World!\n";
 	auto hr = CoInitializeEx(NULL, COINIT_MULTITHREADED);
-	old();
+	pSink = &(DebugAudioSink::DebugAudioSink());
+
+	auto playbackThread = std::thread(&record);
+	Sleep(700);
+	play();
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu

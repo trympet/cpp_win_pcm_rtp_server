@@ -142,11 +142,15 @@
   <ItemGroup>
     <ClCompile Include="AudioSink.cpp" />
     <ClCompile Include="cpp_win_pcm_rtp_server.cpp" />
+    <ClCompile Include="DebugAudioSink.cpp" />
+    <ClCompile Include="LoopbackAudioSink.cpp" />
     <ClCompile Include="RTPPacketFactory.cpp" />
     <ClCompile Include="RTPStream.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AudioSink.h" />
+    <ClInclude Include="DebugAudioSink.h" />
+    <ClInclude Include="LoopbackAudioSink.h" />
     <ClInclude Include="RTPPacketFactory.h" />
     <ClInclude Include="RTPStream.h" />
   </ItemGroup>
