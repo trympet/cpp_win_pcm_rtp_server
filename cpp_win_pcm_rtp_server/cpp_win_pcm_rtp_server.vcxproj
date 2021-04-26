@@ -21,7 +21,7 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{b377b24a-ca19-4d72-8358-371713c2fce1}</ProjectGuid>
+    <ProjectGuid>{F10EEC06-D216-461B-BBED-E6BB14ED8E65}</ProjectGuid>
     <RootNamespace>cppaudiosampler</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <ProjectName>cpp_win_pcm_rtp_server</ProjectName>

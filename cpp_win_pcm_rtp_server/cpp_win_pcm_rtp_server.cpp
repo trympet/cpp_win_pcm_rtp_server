@@ -398,19 +398,6 @@ void old() {
 AudioProvider* provider = NULL;
 LoopbackAudioSink* loopbackSink = NULL;
 
-void playNew() {
-	provider->PlayAudioStream(loopbackSink);
-}
-
-void newM() {
-	auto m_provider = AudioProvider();
-	auto m_loopbackSink = LoopbackAudioSink();
-	provider = &m_provider;
-	loopbackSink = &m_loopbackSink;
-	auto playbackThread = std::thread(&playNew);
-	provider->RecordAudioStream(loopbackSink);
-}
-
 int main()
 {
 	std::cout << "Hello World!\n";
