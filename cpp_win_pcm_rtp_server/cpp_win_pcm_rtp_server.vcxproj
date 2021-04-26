@@ -140,21 +140,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="AudioProvider.cpp" />
     <ClCompile Include="AudioSink.cpp" />
     <ClCompile Include="cpp_win_pcm_rtp_server.cpp" />
-    <ClCompile Include="LoopbackAudioSink.cpp" />
     <ClCompile Include="RTPPacketFactory.cpp" />
     <ClCompile Include="RTPStream.cpp" />
-    <ClCompile Include="SystemAudioStream.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AudioProvider.h" />
     <ClInclude Include="AudioSink.h" />
-    <ClInclude Include="LoopbackAudioSink.h" />
     <ClInclude Include="RTPPacketFactory.h" />
     <ClInclude Include="RTPStream.h" />
-    <ClInclude Include="SystemAudioStream.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
