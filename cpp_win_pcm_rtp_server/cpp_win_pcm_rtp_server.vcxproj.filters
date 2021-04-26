@@ -24,9 +24,6 @@
     <ClCompile Include="RTPPacketFactory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RTPStream.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="DebugAudioSink.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -39,9 +36,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="RTPPacketFactory.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RTPStream.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="DebugAudioSink.h">

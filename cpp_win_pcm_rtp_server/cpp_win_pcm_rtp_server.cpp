@@ -7,10 +7,6 @@
 #include <mmdeviceapi.h>
 #include <WinRTBase.h>
 #include <thread>
-#include "LoopbackAudioSink.h"
-#include <list>
-#include <stack>
-#include <queue>
 #include "DebugAudioSink.h"
 
 #define REFTIMES_PER_SEC  1000000
@@ -94,7 +90,6 @@ HRESULT PlayAudioStream(AudioSink* pAudioSink)
 
 		hr = pRenderClient->ReleaseBuffer(bufferFrameCount, flags);
 	EXIT_ON_ERROR(hr)
-
 		// Calculate the actual duration of the allocated buffer.
 		hnsActualDuration = (double)REFTIMES_PER_SEC *
 		bufferFrameCount / pwfx->nSamplesPerSec;
@@ -269,10 +264,11 @@ int main()
 {
 	std::cout << "Hello World!\n";
 	auto hr = CoInitializeEx(NULL, COINIT_MULTITHREADED);
-	pSink = &(DebugAudioSink::DebugAudioSink());
+	DebugAudioSink sink = DebugAudioSink::DebugAudioSink();
+	pSink = &sink;
 
 	auto playbackThread = std::thread(&record);
-	Sleep(700);
+	//Sleep(800);
 	play();
 }
 

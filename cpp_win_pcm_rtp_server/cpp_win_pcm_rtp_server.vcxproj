@@ -145,14 +145,12 @@
     <ClCompile Include="DebugAudioSink.cpp" />
     <ClCompile Include="LoopbackAudioSink.cpp" />
     <ClCompile Include="RTPPacketFactory.cpp" />
-    <ClCompile Include="RTPStream.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AudioSink.h" />
     <ClInclude Include="DebugAudioSink.h" />
     <ClInclude Include="LoopbackAudioSink.h" />
     <ClInclude Include="RTPPacketFactory.h" />
-    <ClInclude Include="RTPStream.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
