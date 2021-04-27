@@ -30,6 +30,12 @@
     <ClCompile Include="LoopbackAudioSink.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="RTPAudioSink.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RTPAudioStream.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AudioSink.h">
@@ -42,6 +48,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="LoopbackAudioSink.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RTPAudioSink.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RTPAudioStream.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

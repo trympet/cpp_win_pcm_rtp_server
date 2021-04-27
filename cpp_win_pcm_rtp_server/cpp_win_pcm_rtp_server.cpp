@@ -9,8 +9,8 @@
 #include <thread>
 #include "DebugAudioSink.h"
 
-#define REFTIMES_PER_SEC  1000000
-#define REFTIMES_PER_MILLISEC  1000000
+#define REFTIMES_PER_SEC  1000
+#define REFTIMES_PER_MILLISEC  3000000
 
 #define EXIT_ON_ERROR(hres)  \
               if (FAILED(hres)) { goto Exit; }

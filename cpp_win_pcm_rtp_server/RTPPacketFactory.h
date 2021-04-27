@@ -1,4 +1,5 @@
 #pragma once
+#include <WinRTBase.h>
 struct RTPPacket {
 	unsigned int part_zero;
 	unsigned int part_one;
@@ -7,16 +8,17 @@ struct RTPPacket {
 
 class RTPPacketFactory
 {
-private:
-	inline void SetBit(RTPPacket* pPacket, int bitNumber) {
-		pPacket->part_one |= 1 << bitNumber;
-	}
-
-	inline void SetSequenceNumber(RTPPacket* pPacket, unsigned short value) {
-		pPacket->part_one |= value << 16;
-	}
-
 public:
-	RTPPacket* CreatePacket();
+	RTPPacketFactory();
+	RTPPacket* CreatePacket(BYTE* pData, UINT32* nData);
+
+
+private:
+	void SetPartZero(RTPPacket* pResult);
+	void CompressData(BYTE* pData, BYTE* pPacket, UINT32* nData);
+	inline void SetBit(RTPPacket* pPacket, int bitNumber) {
+		//pPacket->part_zero |= 1 << 31 - bitNumber;
+		pPacket->part_zero |= 1  << 1+ bitNumber;
+	}
 };
 

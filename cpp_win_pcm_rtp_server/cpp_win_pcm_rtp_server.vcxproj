@@ -93,6 +93,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;wsock32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -144,12 +145,16 @@
     <ClCompile Include="cpp_win_pcm_rtp_server.cpp" />
     <ClCompile Include="DebugAudioSink.cpp" />
     <ClCompile Include="LoopbackAudioSink.cpp" />
+    <ClCompile Include="RTPAudioSink.cpp" />
+    <ClCompile Include="RTPAudioStream.cpp" />
     <ClCompile Include="RTPPacketFactory.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AudioSink.h" />
     <ClInclude Include="DebugAudioSink.h" />
     <ClInclude Include="LoopbackAudioSink.h" />
+    <ClInclude Include="RTPAudioSink.h" />
+    <ClInclude Include="RTPAudioStream.h" />
     <ClInclude Include="RTPPacketFactory.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
