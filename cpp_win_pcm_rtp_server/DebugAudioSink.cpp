@@ -11,7 +11,13 @@ DebugAudioSink::DebugAudioSink()
 {
 }
 
+void DebugAudioSink::SignalStart()
+{
+	rtpSink.SignalStart();
+}
+
 HRESULT DebugAudioSink::SetFormat(WAVEFORMATEX* format) {
+	rtpSink.SetFormat(format);
 	return loopbackSink.SetFormat(format);
 }
 
@@ -29,6 +35,6 @@ HRESULT DebugAudioSink::LoadData(UINT32 numFramesAvailable, BYTE* pData, DWORD* 
 {
 	//std::cout << "L";
 
-	//return loopbackSink.LoadData(numFramesAvailable, pData, pDone);
+	return loopbackSink.LoadData(numFramesAvailable, pData, pDone);
 	return S_OK;
 }

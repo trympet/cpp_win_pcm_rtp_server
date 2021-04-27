@@ -9,8 +9,11 @@
 #include <thread>
 #include "DebugAudioSink.h"
 
-#define REFTIMES_PER_SEC  1000
+#define REFTIMES_PER_SEC  1000000
 #define REFTIMES_PER_MILLISEC  3000000
+
+//#define REFTIMES_PER_SEC  10000000
+//#define REFTIMES_PER_MILLISEC  10000
 
 #define EXIT_ON_ERROR(hres)  \
               if (FAILED(hres)) { goto Exit; }
@@ -210,32 +213,35 @@ HRESULT RecordAudioStream(AudioSink* pAudioSink)
 
 			hr = pCaptureClient->GetNextPacketSize(&packetLength);
 			EXIT_ON_ERROR(hr)
-
-				while (packetLength != 0)
-				{
-					// Get the available data in the shared buffer.
-					hr = pCaptureClient->GetBuffer(
-						&pData,
-						&numFramesAvailable,
-						&flags, NULL, NULL);
-					EXIT_ON_ERROR(hr)
-
-						if (flags & AUDCLNT_BUFFERFLAGS_SILENT)
-						{
-							pData = NULL;  // Tell CopyData to write silence.
-						}
-
-					// Copy the available capture data to the audio sink.
-					hr = pAudioSink->CopyData(
-						pData, numFramesAvailable, &bDone);
-					EXIT_ON_ERROR(hr)
-
-						hr = pCaptureClient->ReleaseBuffer(numFramesAvailable);
-					EXIT_ON_ERROR(hr)
-
-						hr = pCaptureClient->GetNextPacketSize(&packetLength);
-					EXIT_ON_ERROR(hr)
+				if (packetLength != 0) {
+					pAudioSink->SignalStart();
 				}
+
+			while (packetLength != 0)
+			{
+				// Get the available data in the shared buffer.
+				hr = pCaptureClient->GetBuffer(
+					&pData,
+					&numFramesAvailable,
+					&flags, NULL, NULL);
+				EXIT_ON_ERROR(hr)
+
+					if (flags & AUDCLNT_BUFFERFLAGS_SILENT)
+					{
+						pData = NULL;  // Tell CopyData to write silence.
+					}
+
+				// Copy the available capture data to the audio sink.
+				hr = pAudioSink->CopyData(
+					pData, numFramesAvailable, &bDone);
+				EXIT_ON_ERROR(hr)
+
+					hr = pCaptureClient->ReleaseBuffer(numFramesAvailable);
+				EXIT_ON_ERROR(hr)
+
+					hr = pCaptureClient->GetNextPacketSize(&packetLength);
+				EXIT_ON_ERROR(hr)
+			}
 		}
 
 	hr = pAudioClient->Stop();  // Stop recording.

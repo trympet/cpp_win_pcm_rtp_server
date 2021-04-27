@@ -14,7 +14,9 @@ public:
 
 
 private:
+	void SetHeader(RTPPacket* pPacket);
 	void SetPartZero(RTPPacket* pResult);
+	void IncrementTimestamp(UINT32 nData);
 	void CompressData(BYTE* pData, BYTE* pPacket, UINT32* nData);
 	inline void SetBit(RTPPacket* pPacket, int bitNumber) {
 		//pPacket->part_zero |= 1 << 31 - bitNumber;
