@@ -9,8 +9,8 @@
 #include <thread>
 #include "DebugAudioSink.h"
 
-#define REFTIMES_PER_SEC  1000000
-#define REFTIMES_PER_MILLISEC  3000000
+#define REFTIMES_PER_SEC  10000000
+#define REFTIMES_PER_MILLISEC  100000
 
 //#define REFTIMES_PER_SEC  10000000
 //#define REFTIMES_PER_MILLISEC  10000
